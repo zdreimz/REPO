@@ -79,7 +79,7 @@ namespace REPO
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"\nNombre: {elegido.nombre}\nTier: {elegido.tier}\nTiene {elegido.vida} puntos de vida.\nHace {elegido.daño} puntos de daño.");
+                                    Console.WriteLine($"\nNombre: {elegido.nombre}\nTier: {elegido.Tier}\nTiene {elegido.Vida} puntos de vida.\nHace {elegido.Daño} puntos de daño.");
                                 }
                             } while (elegido == null);
                             break;
@@ -118,7 +118,7 @@ namespace REPO
                                         tier = Convert.ToInt32(es_valido("tier"));
                                         foreach (Monstruo monstruillo in monstruos)
                                         {
-                                            if (monstruillo.tier == tier)
+                                            if (monstruillo.Tier == tier)
                                             {
                                                 Console.Write(monstruillo.nombre + " || "); encontrado = true;
                                             }
@@ -129,7 +129,7 @@ namespace REPO
                                         vida = Convert.ToInt32(es_valido("vida"));
                                         foreach (Monstruo monstruillo in monstruos)
                                         {
-                                            if (monstruillo.vida == vida)
+                                            if (monstruillo.Vida == vida)
                                             {
                                                 Console.Write(monstruillo.nombre + " || "); encontrado = true;
                                             }
@@ -140,7 +140,7 @@ namespace REPO
                                         daño = Convert.ToInt32(es_valido("daño"));
                                         foreach (Monstruo monstruillo in monstruos)
                                         {
-                                            if (monstruillo.daño == daño)
+                                            if (monstruillo.Daño == daño)
                                             {
                                                 Console.Write(monstruillo.nombre + " || "); encontrado = true;
                                             }
@@ -234,45 +234,45 @@ namespace REPO
     public class Monstruo
     {
         public string nombre { get; set; }
-        private int Tier;
-        public int tier
+        private int tier;
+        public int Tier
         {
-            get { return Tier; }
+            get { return tier; }
             set
             {
-                if (value > 3) Tier = 3;
-                else if (value < 1) Tier = 1;
-                else Tier = value;
+                if (value > 3) tier = 3;
+                else if (value < 1) tier = 1;
+                else tier = value;
             }
         }
-        private int Vida;
-        public int vida
+        private int vida;
+        public int Vida
         {
-            get { return Vida; }
+            get { return vida; }
             set
             {
-                if (value > 500) Vida = 500;
-                else if (value < 1) Vida = 1;
-                else Vida = value;
+                if (value > 500) vida = 500;
+                else if (value < 1) vida = 1;
+                else vida = value;
             }
         }
-        private int Daño;
-        public int daño
+        private int daño;
+        public int Daño
         {
-            get { return Daño; }
+            get { return daño; }
             set
             {
-                if (value > 100) Daño = 100;
-                else if (value < 0) Daño = 0;
-                else Daño = value;
+                if (value > 100) daño = 100;
+                else if (value < 0) daño = 0;
+                else daño = value;
             }
         }
         public Monstruo(string nombre, int tier, int vida, int daño)
         {
             this.nombre = nombre;
-            this.tier = tier;
-            this.vida = vida;
-            this.daño = daño;
+            this.Tier = tier;
+            this.Vida = vida;
+            this.Daño = daño;
         }
     }
 }
