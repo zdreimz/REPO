@@ -40,23 +40,16 @@ namespace REPO
                     {
                         case "1":
                             Console.Write("\nESCRIBE 'X' EN CUALQUIER MOMENTO PARA CANCELAR");
-                            Console.Write("\nDime el nombre: ");
-                            nombre = es_valido("nombre");
-                            if (nombre.ToUpper() == "X") break;
-                            Console.Write("\nDime el Tier: ");
-                            input = es_valido("tier");
-                            if (input.ToUpper() == "X") break;
-                            tier = Convert.ToInt32(input);
+                            nombre = Input<string>("\nDime el nombre: ", (string? a, out string result) => { if (string.IsNullOrWhiteSpace(a)) { result = string.Empty; return false; } else { result = a; return true; } }, "Por favor escribe un nombre");
+                            if (nombre == null) break;
+                            tier = Input<int>("\nDime el Tier: ", int.TryParse, "Por favor introduce un tier válido: ");
+                            if (tier == 0) break;
                             Console.WriteLine("Tier guardado!!");
-                            Console.Write("\nDime la vida: ");
-                            input = es_valido("vida");
-                            if (input.ToUpper() == "X") break;
-                            vida = Convert.ToInt32(input);
+                            vida = Input<int>("\nDime la vida: ", int.TryParse, "Por favor introduce una vida válida: ");
+                            if (vida == 0) break;
                             Console.WriteLine("Vida guardada!!");
-                            Console.Write("\nDime el daño: ");
-                            input = es_valido("daño");
-                            if (input.ToUpper() == "X") break;
-                            daño = Convert.ToInt32(input);
+                            daño = Input<int>("\nDime el daño: ", int.TryParse, "Por favor introduce un daño válido: ");
+                            if (daño == 0) break;
                             Console.WriteLine("Monstruo guardado!!");
                             monstruos.Add(new Monstruo(nombre, tier, vida, daño));
                             Guardar(monstruos, ruta);
@@ -169,6 +162,20 @@ namespace REPO
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.ReadKey();
         }
+        public delegate bool Parse<T>(string? input, out T result);
+        public static T? Input<T>(string pregunta, Parse<T> Parse, string error)
+        {
+            do
+            {
+                T resultado;
+                Console.WriteLine(pregunta);
+                string? input = Console.ReadLine();
+                if (input?.ToUpper() == "X") return default;
+                if (Parse(input, out resultado)) return resultado;
+                Console.WriteLine(error);
+            } while (true);
+        }
+        
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public static string es_valido(string cosa)
         {
