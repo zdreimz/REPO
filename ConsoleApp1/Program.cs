@@ -25,7 +25,12 @@ namespace REPO
             string respuesta;
             const string archivo = "monstruos.json";
             string ruta = Path.Combine(AppContext.BaseDirectory, archivo);
+            Console.WriteLine("la ruta del json es " + ruta);
             List<Monstruo> monstruos = Importar<List<Monstruo>>(ruta);
+            foreach (Monstruo monstruo in monstruos)
+            {
+                Console.WriteLine(monstruo.Tier);
+            }
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.WriteLine("\n                           MONSTRUOS DEL R.E.P.O");
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
@@ -72,7 +77,7 @@ namespace REPO
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"\nNombre: {elegido.nombre}\nTier: {elegido.Tier}\nTiene {elegido.Vida} puntos de vida.\nHace {elegido.Daño} puntos de daño.");
+                                    elegido.Enseñar();
                                 }
                             } while (elegido == null);
                             break;
@@ -109,8 +114,12 @@ namespace REPO
                                     case "tier":
                                         Console.Write("\nDime que tier te interesa: ");
                                         tier = Convert.ToInt32(es_valido("tier"));
+                                        Console.WriteLine("tier vale " + tier);
+                                        //var tiers = monstruos.Where(p => p.Tier == tier).ToList();
+                                        //Mostrar(tiers);
                                         foreach (Monstruo monstruillo in monstruos)
                                         {
+                                            Console.WriteLine("entramos y comparamos " + monstruillo.Tier + " vs " + tier);
                                             if (monstruillo.Tier == tier)
                                             {
                                                 Console.Write(monstruillo.nombre + " || "); encontrado = true;
@@ -234,7 +243,11 @@ namespace REPO
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public static T Importar<T>(string ruta) 
         {
-            return JsonSerializer.Deserialize<T>(File.ReadAllText(ruta))!;
+            var opciones = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            return JsonSerializer.Deserialize<T>(File.ReadAllText(ruta), opciones)!;
         }
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     }
@@ -274,12 +287,17 @@ namespace REPO
                 else daño = value;
             }
         }
+        public Monstruo() { }
         public Monstruo(string nombre, int tier, int vida, int daño)
         {
             this.nombre = nombre;
             this.Tier = tier;
             this.Vida = vida;
             this.Daño = daño;
+        }
+        public void Enseñar()
+        {
+            Console.WriteLine($"\nNombre: {nombre}\nTier: {Tier}\nTiene {Vida} puntos de vida.\nHace {Daño} puntos de daño.");
         }
     }
 }
