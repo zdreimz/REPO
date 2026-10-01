@@ -25,19 +25,19 @@ namespace REPO
             string respuesta;
             const string archivo = "monstruos.json";
             string ruta = Path.Combine(AppContext.BaseDirectory, archivo);
-            Console.WriteLine("la ruta del json es " + ruta);
+            //Console.WriteLine("la ruta del json es " + ruta);
             List<Monstruo> monstruos = Importar<List<Monstruo>>(ruta);
-            foreach (Monstruo monstruo in monstruos)
+            /*foreach (Monstruo monstruo in monstruos)
             {
                 Console.WriteLine(monstruo.Tier);
-            }
+            }*/
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.WriteLine("\n                           MONSTRUOS DEL R.E.P.O");
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             do {
                 repetir = true;
                 Console.Write("\n\nQue quieres hacer? Escribe el número: \n\n1.Guardar un monstruo nuevo | 2.Consultar Monstruo | 3.Borrar Monstruo | 4.Buscar por característica: ");
-                respuesta = es_valido("");
+                respuesta = Input<string>("", (string? a, out string result) => { if (string.IsNullOrWhiteSpace(a)) { result = string.Empty; return false; } else { result = a; return true; } }, "Por favor escribe algo: ");
                 if (respuesta != "1" && respuesta != "2" && respuesta != "3" && respuesta != "4") Console.WriteLine("\nNo has introducido un valor apto...");
                 else
                 {
@@ -46,15 +46,15 @@ namespace REPO
                         case "1":
                             Console.Write("\nESCRIBE 'X' EN CUALQUIER MOMENTO PARA CANCELAR");
                             nombre = Input<string>("\nDime el nombre: ", (string? a, out string result) => { if (string.IsNullOrWhiteSpace(a)) { result = string.Empty; return false; } else { result = a; return true; } }, "Por favor escribe un nombre");
-                            if (nombre == null) break;
+                            if (nombre == default) break;
                             tier = Input<int>("\nDime el Tier: ", int.TryParse, "Por favor introduce un tier válido: ");
-                            if (tier == 0) break;
+                            if (tier == default) break;
                             Console.WriteLine("Tier guardado!!");
                             vida = Input<int>("\nDime la vida: ", int.TryParse, "Por favor introduce una vida válida: ");
-                            if (vida == 0) break;
+                            if (vida == default) break;
                             Console.WriteLine("Vida guardada!!");
                             daño = Input<int>("\nDime el daño: ", int.TryParse, "Por favor introduce un daño válido: ");
-                            if (daño == 0) break;
+                            if (daño == default) break;
                             Console.WriteLine("Monstruo guardado!!");
                             monstruos.Add(new Monstruo(nombre, tier, vida, daño));
                             Guardar(monstruos, ruta);
@@ -67,9 +67,9 @@ namespace REPO
                                 Console.WriteLine("......................................................");
                                 Mostrar(monstruos);
                                 Console.WriteLine();
-
-                                input = es_valido("").ToUpper();
-                                if (input.ToUpper() == "X") break;
+                                input = Input<string>("", (string? a, out string result) => { if (string.IsNullOrWhiteSpace(a)) { result = string.Empty; return false; } else { result = a; return true; } }, "Por favor escribe un valor");
+                                //input = es_valido("").ToUpper();
+                                if (input == default) break;
                                 elegido = monstruos.FirstOrDefault(p => p.nombre.ToUpper() == input)!;
                                 if (elegido == null)
                                 {
@@ -85,8 +85,8 @@ namespace REPO
                             do
                             {
                                 Console.Write("\nDime el nombre del monstruo que te gustaria borrar (ESCRIBE 'X' PARA CANCELAR): ");
-                                nombre = es_valido("nombre").ToUpper();
-                                if (nombre == "X") break;
+                                nombre = Input<string>("\nDime el nombre: ", (string? a, out string result) => { if (string.IsNullOrWhiteSpace(a)) { result = string.Empty; return false; } else { result = a; return true; } }, "Por favor escribe un nombre: ");
+                                if (nombre == default) break;
                                 int valor = monstruos.RemoveAll(p => p.nombre.ToUpper() == nombre);
                                 if (valor == 0) Console.WriteLine("No existe ningún monstruo llamado " + nombre);
                                 else
@@ -94,9 +94,9 @@ namespace REPO
                                     Guardar(monstruos, ruta);
                                     Mostrar(monstruos);
                                     Console.WriteLine("Monstruo eliminado");
-                                    repetir = false;
+                                    break;
                                 } 
-                            } while (repetir);
+                            } while (true);
                             break;
                         case "4":
                             Console.Write("\nDime la característica que te gustaria consultar (ESCRIBE 'X' PARA CANCELAR): ");
@@ -105,48 +105,32 @@ namespace REPO
                             {
                                 repetir = true;
                                 encontrado = false;
-                                input = es_valido("").ToLower();
+                                input = Input<string>("", (string? a, out string result) => { if (string.IsNullOrWhiteSpace(a)) { result = string.Empty; return false; } else { result = a; return true; } }, "Por favor escribe algo: ");
                                 switch (input)
                                 {
-                                    case "x":
+                                    case null:
                                         encontrado = true;
                                         break;
                                     case "tier":
                                         Console.Write("\nDime que tier te interesa: ");
                                         tier = Convert.ToInt32(es_valido("tier"));
-                                        Console.WriteLine("tier vale " + tier);
-                                        //var tiers = monstruos.Where(p => p.Tier == tier).ToList();
-                                        //Mostrar(tiers);
-                                        foreach (Monstruo monstruillo in monstruos)
-                                        {
-                                            Console.WriteLine("entramos y comparamos " + monstruillo.Tier + " vs " + tier);
-                                            if (monstruillo.Tier == tier)
-                                            {
-                                                Console.Write(monstruillo.nombre + " || "); encontrado = true;
-                                            }
-                                        }
+                                        var TiersLista = monstruos.Where(p => p.Tier == tier).ToList();
+                                        if (TiersLista.Count != 0) encontrado = true;
+                                        else Mostrar(TiersLista);
                                         break;
                                     case "vida":
                                         Console.Write("\nDime la vida que te interesa: ");
                                         vida = Convert.ToInt32(es_valido("vida"));
-                                        foreach (Monstruo monstruillo in monstruos)
-                                        {
-                                            if (monstruillo.Vida == vida)
-                                            {
-                                                Console.Write(monstruillo.nombre + " || "); encontrado = true;
-                                            }
-                                        }
+                                        var VidaLista = monstruos.Where(p => p.Vida <= vida).ToList();
+                                        if (VidaLista.Count != 0) encontrado = true;
+                                        else Mostrar(VidaLista);
                                         break;
                                     case "daño":
                                         Console.Write("\nDime el daño que te interesa: ");
                                         daño = Convert.ToInt32(es_valido("daño"));
-                                        foreach (Monstruo monstruillo in monstruos)
-                                        {
-                                            if (monstruillo.Daño == daño)
-                                            {
-                                                Console.Write(monstruillo.nombre + " || "); encontrado = true;
-                                            }
-                                        }
+                                        var DañoLista = monstruos.Where(p => p.Daño <= daño).ToList();
+                                        if (DañoLista.Count != 0) encontrado = true;
+                                        else Mostrar(DañoLista);
                                         break;
                                     default:
                                         Console.WriteLine("\nESA CARACTERISTICA NO EXISTE: ");
@@ -166,7 +150,7 @@ namespace REPO
                     if (volver == "NO") repetir = false;
                 }
             } while (repetir);
-            Console.WriteLine("\n\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+            Console.WriteLine("\n\n             *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.WriteLine("\n               GRACIAS POR USAR LA BASE DE DATOS DE R.E.P.O");
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.ReadKey();
@@ -177,11 +161,11 @@ namespace REPO
             do
             {
                 T resultado;
-                Console.WriteLine(pregunta);
+                Console.Write(pregunta);
                 string? input = Console.ReadLine();
                 if (input?.ToUpper() == "X") return default;
                 if (Parse(input, out resultado)) return resultado;
-                Console.WriteLine(error);
+                Console.Write(error);
             } while (true);
         }
         
@@ -227,9 +211,12 @@ namespace REPO
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public static void Mostrar(List<Monstruo> lista)
         {
+            int contador = 0;
             foreach (Monstruo monstruo in lista)
             {
-                Console.WriteLine(monstruo.nombre);
+                ++contador;
+                if (contador % 2 == 0) Console.WriteLine(monstruo.nombre);
+                else Console.Write($"{monstruo.nombre,-13}");
             }
         }
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
