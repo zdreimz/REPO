@@ -40,32 +40,17 @@ namespace REPO
                     switch (respuesta)
                     {
                         case "1":
-                            Monstruo nuevo = AñadirMonstruo();
+                            Monstruo nuevo = CrearMonstruo();
                             if (nuevo != null)
                             {
                                 monstruos.Add(nuevo);
-                                Guardar(monstruos, ruta);
                             }
                             break;
                         case "2":
                             ConsultarMonstruo(monstruos);
                             break;
                         case "3":
-                            do
-                            {
-                                Console.Write("\nDime el nombre del monstruo que te gustaria borrar (ESCRIBE 'X' PARA CANCELAR): ");
-                                nombre = ComprobarValor<string>("\nDime el nombre: ", Nulovacio, "Por favor escribe un nombre: ");
-                                if (nombre == default) break;
-                                int valor = monstruos.RemoveAll(p => p.nombre.ToUpper() == nombre.ToUpper());
-                                if (valor == 0) Console.WriteLine("No existe ningún monstruo llamado " + nombre);
-                                else
-                                {
-                                    Guardar(monstruos, ruta);
-                                    Mostrar(monstruos);
-                                    Console.WriteLine("Monstruo eliminado");
-                                    break;
-                                } 
-                            } while (true);
+                            Eliminar(ref monstruos);
                             break;
                         case "4":
                             do 
@@ -114,12 +99,13 @@ namespace REPO
                     if (volver == "NO") repetir = false;
                 }
             } while (repetir);
+            Guardar(monstruos, ruta);
             Console.WriteLine("\n\n              *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.WriteLine("\n               GRACIAS POR USAR LA BASE DE DATOS DE R.E.P.O");
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.ReadKey();
         }
-        public static Monstruo AñadirMonstruo()
+        public static Monstruo CrearMonstruo()
         {
             string? nombre;
             int tier;
@@ -158,6 +144,25 @@ namespace REPO
                 else
                 {
                     elegido.Enseñar();
+                    break;
+                }
+            } while (true);
+        }
+
+        public static void Eliminar(ref List<Monstruo> monstruos)
+        {
+            do
+            {
+                string? nombre;
+                Console.Write("\nDime el nombre del monstruo que te gustaria borrar (ESCRIBE 'X' PARA CANCELAR): ");
+                nombre = ComprobarValor<string>("\nDime el nombre: ", Nulovacio, "Por favor escribe un nombre: ");
+                if (nombre == default) break;
+                int valor = monstruos.RemoveAll(p => p.nombre.ToUpper() == nombre.ToUpper());
+                if (valor == 0) Console.WriteLine("No existe ningún monstruo llamado " + nombre);
+                else
+                {
+                    Mostrar(monstruos);
+                    Console.WriteLine("Monstruo eliminado");
                     break;
                 }
             } while (true);
