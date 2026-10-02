@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Channels;
 using System.Timers;
 using System.Xml;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace REPO
 {
@@ -14,7 +15,6 @@ namespace REPO
     {
         static void Main(string[] args)
         {
-            
             int tier;
             int vida;
             int daño;
@@ -40,42 +40,15 @@ namespace REPO
                     switch (respuesta)
                     {
                         case "1":
-                            Console.Write("\nESCRIBE 'X' EN CUALQUIER MOMENTO PARA CANCELAR");
-                            nombre = ComprobarValor<string>("\nDime el nombre: ", Nulovacio, "Por favor escribe un nombre");
-                            if (nombre == default) break;
-                            tier = ComprobarValor<int>("\nDime el Tier: ", int.TryParse, "Por favor introduce un tier válido: ");
-                            if (tier == default) break;
-                            Console.WriteLine("Tier guardado!!");
-                            vida = ComprobarValor<int>("\nDime la vida: ", int.TryParse, "Por favor introduce una vida válida: ");
-                            if (vida == default) break;
-                            Console.WriteLine("Vida guardada!!");
-                            daño = ComprobarValor<int>("\nDime el daño: ", int.TryParse, "Por favor introduce un daño válido: ");
-                            if (daño == default) break;
-                            Console.WriteLine("Monstruo guardado!!");
-                            monstruos.Add(new Monstruo(nombre, tier, vida, daño));
-                            Guardar(monstruos, ruta);
+                            Monstruo nuevo = AñadirMonstruo();
+                            if (nuevo != null)
+                            {
+                                monstruos.Add(nuevo);
+                                Guardar(monstruos, ruta);
+                            }
                             break;
                         case "2":
-                            Monstruo elegido;
-                            do
-                            {
-                                Console.WriteLine("\nDime el nombre del monstruo que te gustaria consultar (ESCRIBE 'X' PARA CANCELAR): ");
-                                Console.WriteLine("......................................................");
-                                Mostrar(monstruos);
-                                Console.WriteLine();
-                                input = (ComprobarValor<string>("", Nulovacio, "Por favor escribe un valor")).ToUpper();
-                                Console.WriteLine("Input vale " + input);
-                                if (input == default) break;
-                                elegido = monstruos.FirstOrDefault(p => p.nombre.ToUpper() == input);
-                                if (elegido == null)
-                                {
-                                    Console.WriteLine("\nESE MONSTRUO NO EXISTE!!");
-                                }
-                                else
-                                {
-                                    elegido.Enseñar();
-                                }
-                            } while (elegido == null);
+                            ConsultarMonstruo(monstruos);
                             break;
                         case "3":
                             do
@@ -83,7 +56,7 @@ namespace REPO
                                 Console.Write("\nDime el nombre del monstruo que te gustaria borrar (ESCRIBE 'X' PARA CANCELAR): ");
                                 nombre = ComprobarValor<string>("\nDime el nombre: ", Nulovacio, "Por favor escribe un nombre: ");
                                 if (nombre == default) break;
-                                int valor = monstruos.RemoveAll(p => p.nombre.ToUpper() == nombre);
+                                int valor = monstruos.RemoveAll(p => p.nombre.ToUpper() == nombre.ToUpper());
                                 if (valor == 0) Console.WriteLine("No existe ningún monstruo llamado " + nombre);
                                 else
                                 {
@@ -115,7 +88,7 @@ namespace REPO
                                         Console.Write("\nDime la vida que te interesa: ");
                                         vida = ComprobarValor<int>("\nDime la vida: ", int.TryParse, "Por favor introduce una vida válida: ");
                                         if (vida == default) { encontrado = true; break; }
-                                        encontrado = BuscarPorCaracteristica((p => p.Vida == vida), monstruos);
+                                        encontrado = BuscarPorCaracteristica((p => p.Vida <= vida), monstruos);
                                         break;
                                     case "daño":
                                         Console.Write("\nDime el daño que te interesa: ");
@@ -141,10 +114,53 @@ namespace REPO
                     if (volver == "NO") repetir = false;
                 }
             } while (repetir);
-            Console.WriteLine("\n\n             *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+            Console.WriteLine("\n\n              *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.WriteLine("\n               GRACIAS POR USAR LA BASE DE DATOS DE R.E.P.O");
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.ReadKey();
+        }
+        public static Monstruo AñadirMonstruo()
+        {
+            string? nombre;
+            int tier;
+            int vida;
+            int daño;
+            Console.Write("\nESCRIBE 'X' EN CUALQUIER MOMENTO PARA CANCELAR");
+            nombre = ComprobarValor<string>("\nDime el nombre: ", Nulovacio, "Por favor escribe un nombre");
+            if (nombre == default) return default;
+            tier = ComprobarValor<int>("\nDime el Tier: ", int.TryParse, "Por favor introduce un tier válido: ");
+            if (tier == default) return default;
+            Console.WriteLine("Tier guardado!!");
+            vida = ComprobarValor<int>("\nDime la vida: ", int.TryParse, "Por favor introduce una vida válida: ");
+            if (vida == default) return default;
+            Console.WriteLine("Vida guardada!!");
+            daño = ComprobarValor<int>("\nDime el daño: ", int.TryParse, "Por favor introduce un daño válido: ");
+            if (daño == default) return default;
+            Console.WriteLine("Monstruo guardado!!");
+            return new Monstruo(nombre, tier, vida, daño);
+        }
+        public static void ConsultarMonstruo(List<Monstruo> monstruos)
+        {
+            do
+            {
+                string? input;
+                Console.WriteLine("\nDime el nombre del monstruo que te gustaria consultar (ESCRIBE 'X' PARA CANCELAR): ");
+                Console.WriteLine("......................................................");
+                Mostrar(monstruos);
+                Console.WriteLine();
+                input = (ComprobarValor<string>("", Nulovacio, "Por favor escribe un valor"));
+                if (input == default) break;
+                Monstruo elegido = monstruos.FirstOrDefault(p => p.nombre.ToUpper() == input.ToUpper());
+                if (elegido == null)
+                {
+                    Console.WriteLine("\nESE MONSTRUO NO EXISTE!!");
+                }
+                else
+                {
+                    elegido.Enseñar();
+                    break;
+                }
+            } while (true);
         }
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public delegate bool Parse<T>(string? input, out T result);
