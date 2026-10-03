@@ -15,14 +15,7 @@ namespace REPO
     {
         static void Main(string[] args)
         {
-            int tier;
-            int vida;
-            int daño;
-            bool repetir;
-            bool encontrado;
-            string volver;
-            string? nombre;
-            string? input;
+            string? volver;
             string? respuesta;
             const string archivo = "monstruos.json";
             string ruta = Path.Combine(AppContext.BaseDirectory, archivo);
@@ -31,7 +24,6 @@ namespace REPO
             Console.WriteLine("\n                           MONSTRUOS DEL R.E.P.O");
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             do {
-                repetir = true;
                 Console.Write("\n\nQue quieres hacer? Escribe el número: \n\n1.Guardar un monstruo nuevo | 2.Consultar Monstruo | 3.Borrar Monstruo | 4.Buscar por característica: ");
                 respuesta = ComprobarValor<string>("", Nulovacio, "Por favor escribe algo: ");
                 if (respuesta != "1" && respuesta != "2" && respuesta != "3" && respuesta != "4") Console.WriteLine("\nNo has introducido un valor apto...");
@@ -53,57 +45,59 @@ namespace REPO
                             Eliminar(ref monstruos);
                             break;
                         case "4":
-                            do 
-                            {
-                                Console.Write("\nDime la característica que te gustaria consultar (ESCRIBE 'X' PARA CANCELAR): ");
-                                repetir = true;
-                                encontrado = false;
-                                input = ComprobarValor<string>("\nTIER | DAÑO | VIDA: ", Nulovacio, "Por favor escribe algo: ");
-                                switch (input)
-                                {
-                                    case null:
-                                        encontrado = true;
-                                        break;
-                                    case "tier":
-                                        tier = ComprobarValor<int>("\nDime el Tier que te interesa: ", int.TryParse, "Por favor introduce un tier válido");
-                                        if (tier == default) { encontrado = true; break; }
-                                        encontrado = BuscarPorCaracteristica((p => p.Tier == tier), monstruos); 
-                                        break;
-                                    case "vida":
-                                        Console.Write("\nDime la vida que te interesa: ");
-                                        vida = ComprobarValor<int>("\nDime la vida: ", int.TryParse, "Por favor introduce una vida válida: ");
-                                        if (vida == default) { encontrado = true; break; }
-                                        encontrado = BuscarPorCaracteristica((p => p.Vida <= vida), monstruos);
-                                        break;
-                                    case "daño":
-                                        Console.Write("\nDime el daño que te interesa: ");
-                                        daño = ComprobarValor<int>("\nDime el daño: ", int.TryParse, "Por favor introduce un daño válido: ");
-                                        if (daño == default) { encontrado = true; break; }
-                                        encontrado = BuscarPorCaracteristica((p => p.Daño <= daño), monstruos);
-                                        break;
-                                    default:
-                                        Console.WriteLine("\nESA CARACTERISTICA NO EXISTE: ");
-                                        break;
-                                }
-                                if (encontrado == false) Console.WriteLine("No existe monstruo con ese valor de " + input);
-                            } while (repetir && !encontrado);
+                            BuscarPorCaracteristica(monstruos);
                             break;
-
                     }
-                    repetir = true;
                     do
                     {
                         Console.Write("\n¿Te gustaria realizar otra operación? SI/NO: ");
                         volver = Console.ReadLine()!.ToUpper()!;
                     } while (volver != "SI" && volver != "NO");
-                    if (volver == "NO") repetir = false;
+                    if (volver == "NO") break;
                 }
-            } while (repetir);
+            } while (true);
             Guardar(monstruos, ruta);
             Console.WriteLine("\n\n              *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.WriteLine("\n               GRACIAS POR USAR LA BASE DE DATOS DE R.E.P.O");
             Console.WriteLine("\n               *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             Console.ReadKey();
+        }
+
+        public static void BuscarPorCaracteristica(List<Monstruo> monstruos)
+        {
+            bool encontrado;
+            do
+            {
+                string input;
+                Console.Write("\nDime la característica que te gustaria consultar (ESCRIBE 'X' PARA CANCELAR): ");
+                encontrado = false;
+                input = ComprobarValor<string>("\nTIER | DAÑO | VIDA: ", Nulovacio, "Por favor escribe algo: ");
+                if (input == default) break;
+                switch (input)
+                {
+                    case "tier":
+                        int tier = ComprobarValor<int>("\nDime el Tier que te interesa: ", int.TryParse, "Por favor introduce un tier válido");
+                        if (tier == default) { encontrado = true; break; }
+                        encontrado = BuscarPorCaracteristica((p => p.Tier == tier), monstruos);
+                        break;
+                    case "vida":
+                        Console.Write("\nDime la vida que te interesa: ");
+                        int vida = ComprobarValor<int>("\nDime la vida: ", int.TryParse, "Por favor introduce una vida válida: ");
+                        if (vida == default) { encontrado = true; break; }
+                        encontrado = BuscarPorCaracteristica((p => p.Vida <= vida), monstruos);
+                        break;
+                    case "daño":
+                        Console.Write("\nDime el daño que te interesa: ");
+                        int daño = ComprobarValor<int>("\nDime el daño: ", int.TryParse, "Por favor introduce un daño válido: ");
+                        if (daño == default) { encontrado = true; break; }
+                        encontrado = BuscarPorCaracteristica((p => p.Daño <= daño), monstruos);
+                        break;
+                    default:
+                        Console.WriteLine("\nESA CARACTERISTICA NO EXISTE: ");
+                        break;
+                }
+                if (encontrado == false) Console.WriteLine("No existe monstruo con ese valor de " + input);
+            } while (!encontrado);
         }
         public static Monstruo CrearMonstruo()
         {
