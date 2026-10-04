@@ -30,13 +30,7 @@ namespace REPO
                 {
                     Action Eleccion = respuesta switch
                     {
-                        "1" => () => {
-                            Monstruo nuevo = CrearMonstruo();
-                            if (nuevo != null)
-                            {
-                                monstruos.Add(nuevo);
-                            }
-                        },
+                        "1" => () => CrearYAñadirMonstruo(ref monstruos),
                         "2" => () => ConsultarMonstruo(monstruos),
                         "3" => () => Eliminar(ref monstruos),
                         "4" => () => BuscarPorCaracteristica(monstruos)
@@ -59,7 +53,70 @@ namespace REPO
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+        public static void CrearYAñadirMonstruo(ref List<Monstruo> monstruos)
+        {
+            string? nombre;
+            int tier;
+            int vida;
+            int daño;
+            Console.Write("\nESCRIBE 'X' EN CUALQUIER MOMENTO PARA CANCELAR");
+            nombre = ComprobarValor<string>("\nDime el nombre: ", Nulovacio, "Por favor escribe un nombre");
+            if (nombre == default) return;
+            tier = ComprobarValor<int>("\nDime el Tier: ", int.TryParse, "Por favor introduce un tier válido: ");
+            if (tier == default) return;
+            Console.WriteLine("Tier guardado!!");
+            vida = ComprobarValor<int>("\nDime la vida: ", int.TryParse, "Por favor introduce una vida válida: ");
+            if (vida == default) return;
+            Console.WriteLine("Vida guardada!!");
+            daño = ComprobarValor<int>("\nDime el daño: ", int.TryParse, "Por favor introduce un daño válido: ");
+            if (daño == default) return;
+            Console.WriteLine("Monstruo guardado!!");
+            monstruos.Add(new Monstruo(nombre, tier, vida, daño));
+        }
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        public static void ConsultarMonstruo(List<Monstruo> monstruos)
+        {
+            do
+            {
+                string? input;
+                Console.WriteLine("\nDime el nombre del monstruo que te gustaria consultar (ESCRIBE 'X' PARA CANCELAR): ");
+                Console.WriteLine("......................................................");
+                Mostrar(monstruos);
+                Console.WriteLine();
+                input = (ComprobarValor<string>("", Nulovacio, "Por favor escribe un valor"));
+                if (input == default) break;
+                Monstruo? elegido = monstruos.FirstOrDefault(p => p.nombre.ToUpper() == input.ToUpper());
+                if (elegido == null)
+                {
+                    Console.WriteLine("\nESE MONSTRUO NO EXISTE!!");
+                }
+                else
+                {
+                    elegido.Enseñar();
+                    break;
+                }
+            } while (true);
+        }
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        public static void Eliminar(ref List<Monstruo> monstruos)
+        {
+            do
+            {
+                string? nombre;
+                Console.Write("\nDime el nombre del monstruo que te gustaria borrar (ESCRIBE 'X' PARA CANCELAR): ");
+                nombre = ComprobarValor<string>("\nDime el nombre: ", Nulovacio, "Por favor escribe un nombre: ");
+                if (nombre == default) break;
+                int valor = monstruos.RemoveAll(p => p.nombre.ToUpper() == nombre.ToUpper());
+                if (valor == 0) Console.WriteLine("No existe ningún monstruo llamado " + nombre);
+                else
+                {
+                    Mostrar(monstruos);
+                    Console.WriteLine("Monstruo eliminado");
+                    break;
+                }
+            } while (true);
+        }
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public static void BuscarPorCaracteristica(List<Monstruo> monstruos)
         {
             bool encontrado;
@@ -108,73 +165,8 @@ namespace REPO
             Console.WriteLine("\nESA CARACTERISTICA NO EXISTE: ");
             return false;
         }
-
-
-
-        public static Monstruo CrearMonstruo()
-        {
-            string? nombre;
-            int tier;
-            int vida;
-            int daño;
-            Console.Write("\nESCRIBE 'X' EN CUALQUIER MOMENTO PARA CANCELAR");
-            nombre = ComprobarValor<string>("\nDime el nombre: ", Nulovacio, "Por favor escribe un nombre");
-            if (nombre == default) return default;
-            tier = ComprobarValor<int>("\nDime el Tier: ", int.TryParse, "Por favor introduce un tier válido: ");
-            if (tier == default) return default;
-            Console.WriteLine("Tier guardado!!");
-            vida = ComprobarValor<int>("\nDime la vida: ", int.TryParse, "Por favor introduce una vida válida: ");
-            if (vida == default) return default;
-            Console.WriteLine("Vida guardada!!");
-            daño = ComprobarValor<int>("\nDime el daño: ", int.TryParse, "Por favor introduce un daño válido: ");
-            if (daño == default) return default;
-            Console.WriteLine("Monstruo guardado!!");
-            return new Monstruo(nombre, tier, vida, daño);
-        }
-        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        public static void ConsultarMonstruo(List<Monstruo> monstruos)
-        {
-            do
-            {
-                string? input;
-                Console.WriteLine("\nDime el nombre del monstruo que te gustaria consultar (ESCRIBE 'X' PARA CANCELAR): ");
-                Console.WriteLine("......................................................");
-                Mostrar(monstruos);
-                Console.WriteLine();
-                input = (ComprobarValor<string>("", Nulovacio, "Por favor escribe un valor"));
-                if (input == default) break;
-                Monstruo elegido = monstruos.FirstOrDefault(p => p.nombre.ToUpper() == input.ToUpper());
-                if (elegido == null)
-                {
-                    Console.WriteLine("\nESE MONSTRUO NO EXISTE!!");
-                }
-                else
-                {
-                    elegido.Enseñar();
-                    break;
-                }
-            } while (true);
-        }
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-        public static void Eliminar(ref List<Monstruo> monstruos)
-        {
-            do
-            {
-                string? nombre;
-                Console.Write("\nDime el nombre del monstruo que te gustaria borrar (ESCRIBE 'X' PARA CANCELAR): ");
-                nombre = ComprobarValor<string>("\nDime el nombre: ", Nulovacio, "Por favor escribe un nombre: ");
-                if (nombre == default) break;
-                int valor = monstruos.RemoveAll(p => p.nombre.ToUpper() == nombre.ToUpper());
-                if (valor == 0) Console.WriteLine("No existe ningún monstruo llamado " + nombre);
-                else
-                {
-                    Mostrar(monstruos);
-                    Console.WriteLine("Monstruo eliminado");
-                    break;
-                }
-            } while (true);
-        }
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public delegate bool Parse<T>(string? input, out T result);
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -216,8 +208,7 @@ namespace REPO
             }
             return false;
         }
-
-        
+    
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public static void Mostrar(List<Monstruo> lista)
         {
